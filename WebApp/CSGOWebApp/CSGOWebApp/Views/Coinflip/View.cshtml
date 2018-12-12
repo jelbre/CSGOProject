@@ -1,0 +1,120 @@
+﻿@model Models.Coinflip
+@{
+    ViewBag.Title = "View";
+}
+
+<h1 style="text-align:center">Coinflip #@Model.ID</h1>
+
+@if (Model.Status == 4)
+{
+    RepositoryPattern.CoinflipRepository coinflipRepository =
+        new RepositoryPattern.CoinflipRepository(RepositoryPattern.CoinflipFactory.GetContext(
+            RepositoryPattern.ContextType.MSSQL));
+
+    RepositoryPattern.UserRepository userRepository =
+        new RepositoryPattern.UserRepository(RepositoryPattern.UserFactory.GetContext(
+            RepositoryPattern.ContextType.MSSQL));
+
+    Models.User user = userRepository.GetByID(coinflipRepository.RewardWinner(Model));
+
+    <h2>This coinflip has ended. It was won by @user.Username</h2>
+}
+else
+{
+    <div style="width:80%; align-self:center; margin-left:10%">
+        <div class="container well" style="width:40%; float:left">
+            <h2 style="text-align:center; margin-top:10px; margin-bottom:20px">@Model.Bets[0].User.Username</h2>
+            <div style="height:20px">
+                <h4 style="float:left; margin:0px;">Skins: @Model.Bets[0].Skins.Count</h4>
+                <h4 style="float:right; margin:0px;">Total price: @Model.getBetPrice(0)</h4>
+            </div>
+            @foreach (Models.Skin skin in Model.Bets[0].Skins)
+            {
+                <div style="height:80px; border:1px solid gray">
+                    <img src="~/Images/token.png" style="height:60px; margin:10px; float:left" />
+                    <div>
+                        <h4 title="@skin.GetWear()">@skin.Weapon | @skin.Name</h4>
+                        <p>$@skin.Price</p>
+                    </div>
+                </div>
+            }
+        </div>
+        <div style="float:left; width:20%">
+            @{
+                decimal totalPrice = Model.getTotalPrice();
+                decimal minPrice = totalPrice * 0.95M;
+                decimal maxPrice = totalPrice * 1.05M;
+                <p title="Total skin value" style="margin-bottom:0; font-size:18px; text-align:center;">$@totalPrice.ToString("N2")</p>
+                <p title="Min. deposit value / Max. deposit value" style="margin-bottom:0; font-size:12px; text-align:center;">$@minPrice.ToString("N2") / $@maxPrice.ToString("N2")</p>
+
+                Models.User SessionUser = (Models.User)Session["User"];
+                if (SessionUser != null)
+                {
+                    if (Model.Bets.Count > 1)
+                    {
+                        if (Model.Bets[0].User.ID == SessionUser.ID || Model.Bets[1].User.ID == SessionUser.ID)
+                        {
+                            if (Model.Status == 3)
+                            {
+                                using (Html.BeginForm("GetResult", "Coinflip"))
+                                {
+                                    @Html.HiddenFor(m => m.ID)
+                                    <button type="submit">Get result</button>
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        </div>
+        <div class="container well" style="width:40%; float:right">
+            @if (Model.Bets.Count > 1)
+            {
+                <h2 style="text-align:center; margin-top:10px; margin-bottom:20px">@Model.Bets[1].User.Username</h2>
+                <div style="height:20px">
+                    <h4 style="float:left; margin:0px;">Skins: @Model.Bets[1].Skins.Count</h4>
+                    <h4 style="float:right; margin:0px;">Total price: @Model.getBetPrice(1)</h4>
+                </div>
+                foreach (Models.Skin skin in Model.Bets[1].Skins)
+                {
+                    <div style="height:80px; border:1px solid gray">
+                        <img src="~/Images/token.png" style="height:60px; margin:10px; float:left" />
+                        <div>
+                            <h4 title="@skin.GetWear()">@skin.Weapon | @skin.Name</h4>
+                            <p>$@skin.Price</p>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                try
+                {
+                    Models.User user = (Models.User)Session["User"];
+                    if (Model.Status == 1 && Model.Bets[0].User.ID != user.ID)
+                    {
+                        using (Html.BeginForm("Join", "Coinflip", FormMethod.Get))
+                        {
+                            <button type="submit" style="width:100%">
+                                Join coinflip
+                            </button>
+                        }
+                    }
+                    else
+                    {
+                        <button disabled style="width:100%">
+                            Join coinflip
+                        </button>
+                    }
+                }
+                catch
+                {
+                    <button disabled style="width:100%">
+                        Join coinflip
+                    </button>
+                }
+            }
+        </div>
+    </div>
+}

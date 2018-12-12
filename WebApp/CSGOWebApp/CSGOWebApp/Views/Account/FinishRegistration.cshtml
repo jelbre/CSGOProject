@@ -1,0 +1,29 @@
+﻿@model Models.User
+@{
+    ViewBag.Title = "FinishRegistration";
+}
+
+<p>finish registration</p>
+
+@using (Html.BeginForm("UpdateLoginData", "Account", FormMethod.Post))
+{
+    @Html.HiddenFor(m => Model.ID)
+
+    <p>Username</p>
+    <label class="input-sm" for="Username">
+        @Html.TextBoxFor(m => Model.Username, new { required = "required" })
+    </label>
+
+    <p>Password</p>
+    <label class="input-sm" for="Username">
+        @Html.PasswordFor(m => Model.Password, new { id = "password", required = "required" })
+        <button type="button" id="eye" onclick="if(password.type=='text')password.type='password'; else password.type='text';">
+            toggle visibility
+        </button>
+        <br />
+    </label>
+
+    <button type="submit">
+        Submit
+    </button>
+}

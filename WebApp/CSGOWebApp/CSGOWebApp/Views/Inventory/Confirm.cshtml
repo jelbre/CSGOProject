@@ -1,0 +1,32 @@
+﻿@model List<Models.Skin>
+@{
+    ViewBag.Title = "Confirm";
+}
+
+<h2>Confirm Withdraw</h2>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Rarity</th>
+        <th>Condition</th>
+        <th>Price</th>
+    </tr>
+    @foreach (Models.Skin skin in Model)
+    {
+        int r = skin.Rarity.ColorR;
+        int g = skin.Rarity.ColorG;
+        int b = skin.Rarity.ColorB;
+        <tr>
+            <td width="200px"><p>@skin.Weapon | @skin.Name</p></td>
+            <td width="150px"><p style="color:rgb(@r, @g, @b">@skin.Rarity.Name</p></td>
+            <td width="130px" title="@skin.SkinFloat"><p>@skin.GetWear()</p></td>
+            <td width="100px"><p>@skin.Price</p></td>
+        </tr>
+    }
+</table>
+
+@using (Html.BeginForm("Withdraw", "Inventory"))
+{
+    <button type="submit">Withdraw</button>
+}

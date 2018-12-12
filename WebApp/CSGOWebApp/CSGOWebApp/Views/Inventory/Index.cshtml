@@ -1,0 +1,119 @@
+﻿@model Models.TradeViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>InventoryIndex</h2>
+
+@using (Html.BeginForm("Index", "Inventory", FormMethod.Post))
+{
+    Html.HiddenFor(m => m.ChunkSize);
+
+    <div style="width:672px; float:left">
+        <div style="height:453px; border:solid black 1px; padding-top:10px">
+            @{
+                if (Model.Index < Model.OrderedSkins.Count)
+                {
+                    foreach (Models.Skin skin in Model.OrderedSkins[Model.Index])
+                    {
+                        int r = skin.Rarity.ColorR;
+                        int g = skin.Rarity.ColorG;
+                        int b = skin.Rarity.ColorB;
+                        <div style="margin-left: 10px; margin-bottom: 10px; float: left;">
+                            <div style="height:100px; width:100px">
+                                <div style="position:relative; height:72%; background-color:rgb(165, 165, 165)">
+                                    <img src="~/Images/token.png" style="height:65%; margin-left:25%; margin-top:10%" />
+                                    <div style="float:right; margin-right: 2px;">
+                                        @if (Model.SelectedSkins.Contains(skin.ID))
+                                        {
+                                            <input type="checkbox" checked="checked" name="SelectedSkins" value="@skin.ID">
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" name="SelectedSkins" value="@skin.ID">
+                                        }
+                                    </div>
+                                    <p style="font-size:11px; position:absolute; right:3px; bottom:0; margin-bottom:0;">
+                                        $@skin.Price
+                                    </p>
+                                </div>
+                                <div style="height: 28%; background-color:rgb(@r, @g, @b)">
+                                    <div style="font-size:11px; padding-left:2px; float:left;">
+                                        <p>@skin.Weapon</p>
+                                        <p style="margin-top:-12px; margin-bottom:0px;">@skin.Name</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <h1>There are no skins available, deposit some skins or change the filters</h1>
+                }
+            }
+        </div>
+        <div style="margin-top:10px">
+            @if (Model.Index > 0)
+            {
+                <button type="submit" name="Previous" style="float:left; width:25%">
+                    Previous
+                </button>
+
+                <button type="submit" name="Submit" style="float: left; margin-left:5%; width:40%">
+                    Submit
+                </button>
+            }
+            else
+            {
+                <button type="submit" name="Submit" style="float: left; margin-left:30%; width:40%">
+                    Submit
+                </button>
+            }
+
+            @if (Model.Index < Model.OrderedSkins.Count - 1)
+            {
+                <button type="submit" name="Next" style="float:right; width:25%">
+                    Next
+                </button>
+            }
+        </div>
+    </div>
+
+    <div style="width: 25%; float:right">
+        @{ 
+            List<SelectListItem> sortOptions = new List<SelectListItem>()
+            {
+                new SelectListItem{ Value="Acquired",Text="Acquired"},
+                new SelectListItem{ Value="Quality",Text="Quality"},
+                new SelectListItem{ Value="Alphabetical",Text="Alphabetical"},
+                new SelectListItem{ Value="Collection",Text="Collection"},
+                new SelectListItem{ Value="PriceHL",Text="Price (High => Low)"},
+                new SelectListItem{ Value="PriceLH",Text="Price (Low => High)"}
+            };
+
+            List<SelectListItem> filterOptions = new List<SelectListItem>()
+            {
+                new SelectListItem{ Value="Show all items",Text="Show all items"},
+                new SelectListItem{ Value="Consumer grade",Text="Consumer grade"},
+                new SelectListItem{ Value="Industrial grade",Text="Industrial grade"},
+                new SelectListItem{ Value="Mil-spec",Text="Mil-spec"},
+                new SelectListItem{ Value="Restricted",Text="Restricted"},
+                new SelectListItem{ Value="Classified",Text="Classified"},
+                new SelectListItem{ Value="Covert",Text="Covert"},
+                new SelectListItem{ Value="Rare special item",Text="Rare special item"},
+                new SelectListItem{ Value="Contraband",Text="Contraband"}
+            };
+        }
+
+        @Html.DropDownListFor(m => m.SortOption, sortOptions) <p>Sort Options</p>
+
+        @Html.DropDownListFor(m => m.RarityFilter, filterOptions) <p>Filter Options</p>
+
+        @Html.TextBoxFor(m => m.TextFilter, new { placeholder= "Enter‌ a‌ filter"})
+
+        <button type="submit" name="ApplyFilters" style="float:right; width:25%">
+            Apply filters
+        </button>
+    </div>
+}

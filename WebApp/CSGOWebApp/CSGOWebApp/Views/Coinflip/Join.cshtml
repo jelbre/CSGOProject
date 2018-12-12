@@ -1,0 +1,92 @@
+﻿@model Models.CoinflipViewModel
+@{
+    ViewBag.Title = "Join";
+}
+
+<h1>Join coinflip</h1>
+
+@if(Model.ErrorMessage != null)
+{
+    <p style="color:red">@Model.ErrorMessage</p>
+}
+
+@using (Html.BeginForm("Join", "Coinflip", FormMethod.Post))
+{
+    <div style="width:452px; height:500px; float:left;">
+        <div style="height:452px; border:solid black 1px; padding-top:10px">
+            @{
+                int tempIndex = 0;
+                if (Model.OrderedSkins.Count() > 0)
+                {
+                    foreach (Models.Skin skin in Model.OrderedSkins[Model.Index])
+                    {
+                        int r = skin.Rarity.ColorR;
+                        int g = skin.Rarity.ColorG;
+                        int b = skin.Rarity.ColorB;
+                        <div style="margin-left: 10px; margin-bottom: 10px; float: left;">
+                            <div style="height:100px; width:100px">
+                                <div style="position:relative; height:72%; background-color:rgb(165, 165, 165)">
+                                    <img src="~/Images/token.png" style="height:65%; margin-left:25%; margin-top:10%" />
+                                    <div style="float:right; margin-right: 2px;">
+                                        @if (Model.SelectedSkins.Contains(skin.ID))
+                                        {
+                                            <input type="checkbox" checked="checked" name="SelectedSkins" value="@skin.ID">
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" name="SelectedSkins" value="@skin.ID">
+                                        }
+                                    </div>
+                                    <p style="font-size:11px; position:absolute; right:3px; bottom:0; margin-bottom:0;">
+                                        $@skin.Price
+                                    </p>
+                                </div>
+                                <div style="height: 28%; background-color:rgb(@r, @g, @b)">
+                                    <div style="font-size:11px; padding-left:2px; float:left;">
+                                        <p>@skin.Weapon</p>
+                                        <p style="margin-top:-12px; margin-bottom:0px;">@skin.Name</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        tempIndex++;
+
+                        if (tempIndex % 4 == 0)
+                        {
+                            <br />
+                        }
+                    }
+                }
+                else
+                {
+                    <h1>You do not have any skins available.</h1>
+                }
+            }
+        </div>
+        <div style="margin-top:10px">
+            @if (Model.Index > 0)
+            {
+                <button type="submit" name="Previous" style="float:left; width:25%">
+                    Previous
+                </button>
+
+                <button type="submit" name="Submit" style="float: left; margin-left:5%; width:40%">
+                    Submit
+                </button>
+            }
+            else
+            {
+                <button type="submit" name="Submit" style="float: left; margin-left:30%; width:40%">
+                    Submit
+                </button>
+            }
+
+            @if (Model.Index < Model.OrderedSkins.Count - 1)
+            {
+                <button type="submit" name="Next" style="float:right; width:25%">
+                    Next
+                </button>
+            }
+        </div>
+    </div>
+}

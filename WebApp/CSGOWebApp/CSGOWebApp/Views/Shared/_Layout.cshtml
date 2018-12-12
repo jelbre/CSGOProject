@@ -1,0 +1,84 @@
+﻿@using Models;
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body style="padding : 0%">
+
+    <div class="navbar-collapse collapse" style="background-color:darkgrey">
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <a href="~/Home/Index">Home</a>
+            </li>
+            <li>
+                <a href="~/Coinflip/Index">Coinflip</a>
+            </li>
+            <li>
+                <a href="~/Inventory/Index">Inventory</a>
+            </li>
+            <li>
+                <a href="~/Deposit/Index">Deposit</a>
+            </li>
+
+            @*Daymode/Nightmode button*@
+            <li>
+                <a href="">
+                @{
+                    if (Session["User"] != null)
+                    {
+                        Models.User user = Session["User"] as Models.User;
+                        if (user.NightMode)
+                        {
+                            <img src="https://image.flaticon.com/icons/svg/61/61412.svg" height="15"/>
+                        }
+                        else
+                        {
+                            <img src="https://image.flaticon.com/icons/svg/107/107753.svg" height="15" />
+                        }
+                    }
+                    else
+                    {
+                        <img src="https://image.flaticon.com/icons/svg/107/107753.svg" height="15" />
+                    }
+                }
+                </a>
+            </li>
+
+            @*Login button*@
+            <li>
+                @{
+                    try
+                    {
+                        User user = (User)Session["User"];
+                        if (user != null)
+                        {
+                            <a title="Account page" href="~/Account">@user.Username</a>
+                        }
+                        else
+                        {
+                            <a title="Login page" href="~/Account">Log in</a>
+                        }
+                    }
+                    catch
+                    {
+                        <a title="Login page" href="~/Account">Log in</a>
+                    }
+                }
+            </li>
+        </ul>
+    </div>
+
+    @RenderBody()
+
+
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

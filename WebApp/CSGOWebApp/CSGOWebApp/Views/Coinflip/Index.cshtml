@@ -1,0 +1,103 @@
+﻿@model Models.CoinflipViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Coinflips</h2>
+
+@using (Html.BeginForm("Create", "Coinflip", FormMethod.Get))
+{
+    <button type="submit">
+        Create coinflip
+    </button>
+}
+
+<div>
+   @if (Model.Coinflips.Count > 0)
+    {
+        <table class="table-striped" style="width:70%; margin-left:15%">
+            <tr>
+                <th width="70px;" style="margin-left:10px; text-align:center"><p style="margin:5px 0px 5px 0px;">Creator</p></th>
+                <th width="70px;" style="margin-left:10px; text-align:center"><p style="margin:5px 0px 5px 0px;">Contestant</p></th>
+                <th style="padding-left:10px"><p style="margin:5px 0px 5px 0px;">Skins</p></th>
+                <th width="100px;" style="margin-left:10px; text-align:center"><p style="margin:5px 0px 5px 0px;">Price</p></th>
+                <th width="70px;" style="margin-left:10px; text-align:center"><p style="margin:5px 0px 5px 0px;">Status</p></th>
+                <th width="70px;" style="margin-left:10px; text-align:center"><p style="margin:5px 0px 5px 0px;">Actions</p></th>
+            </tr>
+           @foreach (Models.Coinflip coinflip in Model.Coinflips)
+            {
+                <tr style="height:70px">
+                    <td align="center">
+                        <img height="50" title="@coinflip.Bets[0].User.Username" width="50" src="@coinflip.Bets[0].User.getProfilePicBySteamID()" />
+                    </td>
+                    <td align="center">
+                   @if (coinflip.Bets.Count > 1)
+                    {
+                            <img height="50" title="@coinflip.Bets[1].User.Username" width="50" src="@coinflip.Bets[1].User.getProfilePicBySteamID()" />
+                    }
+                   @if (coinflip.Status == 2)
+                    {
+                            <h1 style="margin:0px"><b>?</b></h1>
+                    }
+                    </td>
+                    <td style="padding-left:10px">
+                        @foreach (Models.Bet bet in coinflip.Bets)
+                        {
+                            foreach (Models.Skin skin in bet.Skins)
+                            {
+                                string title = skin.Weapon + " | " + skin.Name + " - " + skin.Price.ToString("N2");
+                                <img height="50" title="@title" width="50" src="~/Images/token.png" />
+                            }
+                        }
+                    </td>
+                    <td align="center">
+                        @{
+                            decimal totalPrice = coinflip.getTotalPrice();
+                            decimal minPrice = totalPrice * 0.95M;
+                            decimal maxPrice = totalPrice * 1.05M;
+                            <p title="Total skin value" style="margin-bottom:0; font-size:18px;">$@totalPrice.ToString("N2")</p>
+                            <p title="Min. deposit value / Max. deposit value" style="margin-bottom:0; font-size:12px;">$@minPrice.ToString("N2") / $@maxPrice.ToString("N2")</p>
+                        }
+                    </td>
+                    <td align="center">
+                        @switch (coinflip.Status)
+                        {
+                            case 1:
+                                <p style="margin-bottom:0px">Joinable</p>
+                                break;
+
+                            case 2:
+                                <p style="margin-bottom:0px">Player joining</p>
+                                break;
+
+                            case 3:
+                                <p style="margin-bottom:0px">Awaiting result</p>
+                                break;
+
+                            case 4:
+                                <p style="margin-bottom:0px">Closed</p>
+                                break;
+
+                            default:
+                                <p style="margin-bottom:0px">-</p>
+                                break;
+                        }
+                    </td>
+                    <td align="center">
+                        @using (Html.BeginForm("View", "Coinflip", new { ID = coinflip.ID }))
+                        {
+                            Html.HiddenFor(m => coinflip);
+                            <button type="submit">
+                                View
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <h1>There are currently no coinflips available.</h1>
+    }
+</div>

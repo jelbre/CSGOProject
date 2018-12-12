@@ -1,0 +1,107 @@
+﻿@model Models.User
+@{
+    ViewBag.Title = "Index";
+}
+
+@{
+    try
+    {
+        Models.User user = (Models.User)Session["User"];
+        if (user.ID > 0)
+        {
+            <h1>Account page</h1>
+            if (Model.Steam64ID <= 0)
+            {
+                using (Html.BeginForm("LoginSteam", "Account"))
+                {
+                    @Html.HiddenFor(m => Model.ID)
+                    
+                    <button type="submit" name="LinkSteam">
+                        Link with your steam account <br />
+                        <img src="https://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_01.png" width="180" height="35" border="0" padding-right="5%" padding-top="3%" padding-bottom="4%">
+                    </button>
+                }
+            }
+            else
+            {
+                <p>Your account is linked with steam account @Model.Steam64ID</p>
+            }
+            using (Html.BeginForm("UpdateLoginData", "Account"))
+            {
+                @Html.HiddenFor(m => Model.ID)
+
+                <p>Change your username</p>
+                <label class="input-sm" for="Password">
+                    @Html.TextBoxFor(m => Model.Username, new { id = "Username", required = "required" })
+                </label>
+
+                <button type="submit" name="ChangeUsername">
+                    Submit
+                </button>
+            }
+            using (Html.BeginForm("ChangePassword", "Account"))
+            {
+                @Html.HiddenFor(m => Model.ID)
+
+                <p>Enter your current password to change to a new password</p>
+                <label class="input-sm" for="Password">
+                    @Html.PasswordFor(m => Model.Password, new { id = "password", required = "required" })
+                    <button type="button" id="eye" onclick="if(password.type=='text')password.type='password'; else password.type='text';">
+                        toggle visibility
+                    </button>
+                </label>
+
+                <button type="submit" name="ChangePassword">
+                    Submit
+                </button>
+            }
+            <a href="~/Account/LogOut">Log out</a>
+        }
+    }
+    catch
+    {
+        <h1>Login or create an account</h1>
+        using (Html.BeginForm("Login", "Account", FormMethod.Post))
+        {
+            //Username textbox
+            <label class="input-sm" for="Username">
+                @Html.TextBoxFor(m => Model.Username, new { required = "required" })
+            </label>
+
+            //Password textbox
+            <label class="input-sm" for="Password">
+                @Html.PasswordFor(m => Model.Password, new { id = "password", required = "required" })
+                <button type="button" id="eye" onclick="if(password.type=='text')password.type='password'; else password.type='text';">
+                    toggle visibility
+                </button>
+            </label>
+
+            //Login button
+            <input class="btn btn-primary" type="submit" value="Log in" name="LoginWithPass">
+
+            //Register button
+            <input class="btn btn-primary" type="submit" value="Register" name="RegisterWithPass">
+        }
+
+        <br />
+        <br />
+        <br />
+
+        using (Html.BeginForm("LoginSteam", "Account", FormMethod.Post))
+        {
+            <button type="submit" name="LoginWithSteam">
+                Log in <br />
+                <img src="https://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_01.png" width="180" height="35" border="0" padding-right="5%" padding-top="3%" padding-bottom="4%">
+            </button>
+        }
+
+
+        using (Html.BeginForm("LoginSteam", "Account", FormMethod.Post))
+        {
+            <button type="submit" name="RegisterWithSteam">
+                Register <br />
+                <img src="https://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_01.png" width="180" height="35" border="0" padding-right="5%" padding-top="3%" padding-bottom="4%">
+            </button>
+        }
+    }
+}
